@@ -4,12 +4,45 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Landsat Fetch Pipeline</title>
+    <!-- Leaflet & Leaflet Draw CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css" />
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-    <h1>Landsat Fetch Pipeline</h1>
-    <p>The map interface will go here.</p>
-    
+    <div class="app-container">
+        <div class="sidebar">
+            <h2>Landsat Fetch Pipeline</h2>
+            <form id="job-form">
+                <div class="form-group">
+                    <label for="email">Email Address:</label>
+                    <input type="email" id="email" required placeholder="user@example.com">
+                </div>
+                <div class="form-group">
+                    <label for="start-date">Start Date:</label>
+                    <input type="date" id="start-date" required>
+                </div>
+                <div class="form-group">
+                    <label for="end-date">End Date:</label>
+                    <input type="date" id="end-date" required>
+                </div>
+                <p class="instruction-text">Use the tool on the map to draw a bounding box.</p>
+                <button type="submit" id="submit-btn" disabled>Draw area on map first</button>
+            </form>
+
+            <div id="status-panel" class="hidden">
+                <hr>
+                <h3>Process Status</h3>
+                <p>Task ID: <span id="task-id"></span></p>
+                <p>Status: <strong id="task-status">Pending</strong></p>
+            </div>
+        </div>
+        <div id="map"></div>
+    </div>
+
+    <!-- Leaflet & Leaflet Draw JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
 </html>
