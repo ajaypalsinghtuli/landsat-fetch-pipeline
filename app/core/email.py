@@ -1,15 +1,15 @@
+import os
 import smtplib
 from email.message import EmailMessage
+from dotenv import load_dotenv
+
+load_dotenv()
 
 def send_status_email(recipient_email, task_id, status, file_path=None):
-    """
-    Constructs and sends an email notification to the user regarding their Landsat job.
-    """
-    # In production, these should be loaded from environment variables (e.g., .env file)
-    SMTP_SERVER = "smtp.gmail.com" 
-    SMTP_PORT = 587
-    SENDER_EMAIL = "your-email@gmail.com" 
-    SENDER_PASSWORD = "your-app-password"
+    SMTP_SERVER = os.getenv("SMTP_SERVER", "smtp.gmail.com")
+    SMTP_PORT = int(os.getenv("SMTP_PORT", 587))
+    SENDER_EMAIL = os.getenv("SENDER_EMAIL")
+    SENDER_PASSWORD = os.getenv("SENDER_PASSWORD")
 
     msg = EmailMessage()
     msg['Subject'] = f"Landsat Fetch Pipeline - Task {status}"
@@ -17,36 +17,20 @@ def send_status_email(recipient_email, task_id, status, file_path=None):
     msg['To'] = recipient_email
 
     if status == "Completed":
-        content = (
-            f"Hello,\n\n"
-            f"Your Landsat data processing (Task ID: {task_id}) is complete.\n\n"
-            f"The image has been successfully downloaded to your local machine at:\n"
-            f"{file_path}\n\n"
-            f"Thank you for using the pipeline."
-        )
+        content = f"Your Landsat data processing (Task ID: {task_id}) is complete.\nDownloaded to: {file_path}"
     else:
-        content = (
-            f"Hello,\n\n"
-            f"Your Landsat data processing (Task ID: {task_id}) failed.\n"
-            f"Please try submitting again with a different date range or a smaller bounding box."
-        )
+        content = f"Your Landsat data processing (Task ID: {task_id}) failed."
 
     msg.set_content(content)
 
     try:
-        # --- PRODUCTION CODE (Uncomment when you have a real sender email/password) ---
-        # server = smtplib.SMTP(SMTP_SERVER, SMTP_PORT)
-        # server.starttls()
-        # server.login(SENDER_EMAIL, SENDER_PASSWORD)
-        # server.send_message(msg)
-        # server.quit()
-        
-        # --- DEVELOPMENT CODE (Mocks the email in your terminal) ---
-        print("\n" + "="*50)
-        print(f"MOCK EMAIL SENT TO: {recipient_email}")
-        print(f"SUBJECT: {msg['Subject']}")
-        print(f"CONTENT:\n{content}")
-        print("="*50 + "\n")
-        
+        if SENDER_EMAIL and SENDER_PASSWORD:
+            server = smtplib.SMTP(SMTP_SERVER, SMTP_PORT)
+            server.starttls()
+            server.login(SENDER_EMAIL, SENDER_PASSWORD)
+            server.send_message(msg)
+            server.quit()
+        else:
+            print(f"MOCK EMAIL SENT TO: {recipient_email}")
     except Exception as e:
         print(f"Failed to send email: {e}")
