@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  landsat-web:
+    build: .
+    container_name: landsat-pipeline
+    restart: unless-stopped
+    ports:
+      - "5010:5010"
+    volumes:
+      # Maps the local instance folder to the container's instance folder.
+      # This ensures your SQLite DB and downloaded Landsat images persist safely on your server.
+      - ./instance:/app/instance
+    env_file:
+      # Securely passes your email credentials into the container
+      - .env
